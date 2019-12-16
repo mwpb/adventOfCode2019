@@ -60,14 +60,6 @@ class Aoc4Test {
     }
 
     @Test
-    void allAboveInner() {
-        Aoc4 aoc4test = new Aoc4();
-        Assertions.assertEquals(aoc4test.allAboveInner(7, 2, false), 6);
-        Assertions.assertEquals(aoc4test.allAboveInner(7, 2, true), 5);
-        System.out.println(aoc4test.allAboveInner(8, 2, true));
-    }
-
-    @Test
     void countValid() {
 //        Aoc4 aoc4test = new Aoc4();
 //        aoc4test.UPPER_BOUND = 125800;
