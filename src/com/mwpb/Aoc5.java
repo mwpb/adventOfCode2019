@@ -127,7 +127,6 @@ public class Aoc5 {
             } else if (opcode == 99) {
                 break;
             }
-
         }
         if (returnOutput) {
             return -1;
