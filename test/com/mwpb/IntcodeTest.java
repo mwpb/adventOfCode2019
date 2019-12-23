@@ -122,4 +122,5 @@ class IntcodeTest {
         test2.input = new LinkedList<Integer>(List.of(2));
         Assertions.assertEquals(33679, test2.run().get());
     }
+
 }
