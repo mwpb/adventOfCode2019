@@ -51,7 +51,7 @@ class Moon {
 public class Aoc12 {
 
     Moon[] moons;
-    Set<String> states;
+    Map<String, Integer> states;
 
     Aoc12(String positionsString) {
         positionsString = positionsString.replaceAll("[<>=xyz]", "").replaceAll(" ", "");
@@ -61,7 +61,7 @@ public class Aoc12 {
             moons[i] = new Moon(positionsArray[i]);
         }
         this.moons = moons;
-        this.states = new HashSet<>();
+        this.states = new HashMap<>();
     }
 
     void applyBinaryGravity(Moon moon1, Moon moon2) {
@@ -112,8 +112,22 @@ public class Aoc12 {
         return String.format("%s:%s:%s:%s", this.moons[0], this.moons[1], this.moons[2], this.moons[3]);
     }
 
+    String getStateStringX() {
+        return String.format("%d+%d:%d+%d:%d+%d:%d+%d", this.moons[0].x, this.moons[0].vx,
+                this.moons[1].x, this.moons[1].vx, this.moons[2].x, this.moons[2].vx, this.moons[3].x, this.moons[3].vx);
+    }
+
+    String getStateStringY() {
+        return String.format("%d+%d:%d+%d:%d+%d:%d+%d", this.moons[0].y, this.moons[0].vy,
+                this.moons[1].y, this.moons[1].vy, this.moons[2].y, this.moons[2].vy, this.moons[3].y, this.moons[3].vy);
+    }
+
+    String getStateStringZ() {
+        return String.format("%d+%d:%d+%d:%d+%d:%d+%d", this.moons[0].z, this.moons[0].vz,
+                this.moons[1].z, this.moons[1].vz, this.moons[2].z, this.moons[2].vz, this.moons[3].z, this.moons[3].vz);
+    }
+
     void run() {
-        this.states.add(this.getStateString());
         this.applyGravity();
         this.applyVelocity();
     }
@@ -124,15 +138,43 @@ public class Aoc12 {
         }
     }
 
-    int findFirstRepeat() {
-        int step = 0;
-        while (!this.states.contains(this.getStateString())) {
-            this.run();
-            step++;
-            System.out.println(step);
-            System.out.println(this.states);
+    long gcd(long a, long b) {
+        while ( a > 0 && b > 0) {
+            if (a > b) {
+                a -= b;
+            } else if (a < b) {
+                b -= a;
+            } else {
+                return a;
+            }
         }
-        return step;
+        return a;
+    }
+
+    long lcm(long a, long b) {
+        return (a * b) / this.gcd(a, b);
+    }
+
+    long findFirstRepeat() {
+        int stepX = 0;
+        while (!this.states.keySet().contains(this.getStateStringX())) {
+            this.states.put(this.getStateStringX(), stepX);
+            this.run();
+            stepX++;
+        }
+        int stepY = 0;
+        while (!this.states.keySet().contains(this.getStateStringY())) {
+            this.states.put(this.getStateStringY(), stepY);
+            this.run();
+            stepY++;
+        }
+        int stepZ = 0;
+        while (!this.states.keySet().contains(this.getStateStringZ())) {
+            this.states.put(this.getStateStringZ(), stepZ);
+            this.run();
+            stepZ++;
+        }
+        return this.lcm(this.lcm(stepX, stepY), stepZ);
     }
 
 }
