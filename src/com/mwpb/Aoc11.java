@@ -1,5 +1,6 @@
 package com.mwpb;
 
+import java.io.IOException;
 import java.util.*;
 
 enum Direction {
@@ -35,7 +36,7 @@ public class Aoc11 {
         this.canvas = new long[60][200];
     }
 
-    int runRobot(boolean startOnWhite) {
+    int runRobot(boolean startOnWhite) throws IOException {
         Set<String> panelsPainted = new HashSet<>();
         int x = 100;
         int y = 35;

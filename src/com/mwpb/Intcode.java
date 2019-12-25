@@ -84,11 +84,18 @@ public class Intcode {
         this.pointer += 4;
     }
 
-    void processCode3() {
+    void processCode3() throws IOException {
 //        this.memory[this.getLiteralFirstParameter()] = this.input.remove(0);
 //        System.out.println(this.getFirstParameter());
-        this.memory[this.first()] = this.input.remove(0);
-        this.pointer += 2;
+        if (this.input.size() == 0) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String input = reader.readLine();
+            this.memory[this.first()] = Integer.parseInt(input);
+            this.pointer += 2;
+        } else {
+            this.memory[this.first()] = this.input.remove(0);
+            this.pointer += 2;
+        }
     }
 
     long processCode4() {
@@ -137,7 +144,7 @@ public class Intcode {
         this.pointer += 2;
     }
 
-    Optional<Long> run() {
+    Optional<Long> run() throws IOException {
         boolean finished = false;
         while (!finished) {
 //            System.out.println(String.format("%s: %d", Arrays.toString(this.memory), this.memory[this.pointer]));
