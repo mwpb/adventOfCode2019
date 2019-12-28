@@ -57,12 +57,14 @@ public class Aoc14 {
             Reactant output = new Reactant(line[1]);
             reactions.put(output.name, new Reaction(output.quantity, inputs));
             this.reactions = reactions;
+            Map<String, Long> reactantsRequired = new HashMap<>();
+            reactantsRequired.put("FUEL", 1L);
         }
     }
 
-    boolean isFinished(Map<String, Integer> reactantsRequired) {
+    boolean isFinished(Map<String, Long> reactantsRequired) {
 //        if (reactantsRequired.getOrDefault("ORE", 0) > 100) return true;
-        for (Map.Entry<String, Integer> entry: reactantsRequired.entrySet()) {
+        for (Map.Entry<String, Long> entry: reactantsRequired.entrySet()) {
             if (!entry.getKey().equals("ORE") && entry.getValue() > 0) {
                 return false;
             }
@@ -79,25 +81,71 @@ public class Aoc14 {
         throw new IllegalArgumentException("Not finished.");
     }
 
-    int fuelRequired() {
-        Map<String, Integer> reactantsRequired = new HashMap<>();
-        reactantsRequired.put("FUEL", 1);
+    Map.Entry<String, Long> getNextLong(Map<String, Long> reactantsRequired) {
+        for (Map.Entry<String, Long> entry: reactantsRequired.entrySet()) {
+            if (!entry.getKey().equals("ORE") && entry.getValue() > 0) {
+                return entry;
+            }
+        }
+        throw new IllegalArgumentException("Not finished.");
+    }
+
+    long fuelRequired() {
+        return this.fuelRequired(1L);
+    }
+
+    long fuelRequired(long initFuel) {
+        Map<String, Long> reactantsRequired = new HashMap<>();
+        reactantsRequired.put("FUEL", initFuel);
         while (!this.isFinished(reactantsRequired)) {
 //            System.out.println(reactantsRequired);
-            Map.Entry<String, Integer> entry = this.getNext(reactantsRequired);
+            Map.Entry<String, Long> entry = this.getNextLong(reactantsRequired);
             String outputName = entry.getKey();
-            int outputQuantity = entry.getValue();
+            long outputQuantity = entry.getValue();
             Reaction reaction = this.reactions.get(outputName);
-            int reactionOutputQuantity = reaction.outputQuantity;
+            long reactionOutputQuantity = reaction.outputQuantity;
+            long n = (long) Math.ceil( (float) outputQuantity / (float) reactionOutputQuantity);
             for (Map.Entry<String, Integer> reactionEntry: reaction.reactants.entrySet()) {
                 String inputName = reactionEntry.getKey();
-                int inputQuantity = reactionEntry.getValue();
-                int old = reactantsRequired.getOrDefault(inputName, 0);
-                reactantsRequired.put(inputName, old + inputQuantity);
+                long inputQuantity = reactionEntry.getValue();
+                long old = reactantsRequired.getOrDefault(inputName, 0L);
+                reactantsRequired.put(inputName, old + (n) * inputQuantity);
             }
-            reactantsRequired.put(outputName, outputQuantity - reactionOutputQuantity);
+            reactantsRequired.put(outputName, outputQuantity - (n)  * reactionOutputQuantity);
         }
         return reactantsRequired.get("ORE");
+    }
+
+    long fuelForOre() {
+        long upperBound = 1000000000L;
+        long lowerBound = 1L;
+        while (lowerBound < upperBound) {
+            if (lowerBound == upperBound) {
+                return upperBound;
+            } else if (lowerBound == upperBound - 1) {
+                System.out.println(String.format("%d - %d", lowerBound, upperBound));
+                long fr = this.fuelRequired(upperBound);
+                System.out.println(fr);
+                if (fr < 1000000000000L) {
+                    return upperBound;
+                } else {
+                    return lowerBound;
+                }
+            }
+//            System.out.println(String.format("%d - %d", lowerBound, upperBound));
+            long i = (lowerBound + upperBound) / 2;
+            long fr = this.fuelRequired(i);
+            System.out.println(fr);
+            if (fr > 1000000000000L) {
+                upperBound = i;
+            } else if (fr == 1000000000000L) {
+                return i;
+            } else {
+                lowerBound = i;
+            }
+//            System.out.println(String.format("%d - %d", lowerBound, upperBound));
+        }
+        return lowerBound;
     }
 
 }
