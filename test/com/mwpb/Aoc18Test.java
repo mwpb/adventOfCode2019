@@ -1,7 +1,10 @@
 package com.mwpb;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,21 +97,73 @@ class Aoc18Test {
     void init() {
         Aoc18 aoc18 = new Aoc18(this.mazeString);
         System.out.println(Arrays.deepToString(aoc18.maze));
-    }
-
-    @Test
-    void getDistDict() {
-        Aoc18 aoc18 = new Aoc18(this.mazeString);
-        System.out.println(aoc18.getDistDict(new Point(aoc18.robotX, aoc18.robotY)));
         System.out.println(aoc18.keysRemaining);
-        System.out.println(aoc18.doors);
     }
 
     @Test
-    void getBestKey() {
-        Aoc18 aoc18 = new Aoc18(this.mazeString);
-        Map<Point, Integer> distDict = aoc18.getDistDict(new Point(aoc18.robotX, aoc18.robotY));
-        System.out.println(distDict);
-        System.out.println(aoc18.getBestKey(distDict));
+    void bfs() {
+        Aoc18 aoc18 = new Aoc18("#################\n" +
+                "#i.G..c...e..H.p#\n" +
+                "########.########\n" +
+                "#j.A..b...f..D.o#\n" +
+                "########@########\n" +
+                "#k.E..a...g..B.n#\n" +
+                "########.########\n" +
+                "#l.F..d...h..C.m#\n" +
+                "#################");
+        aoc18.bfs(aoc18.keysRemaining.get('a'));
+        System.out.println(aoc18.distances);
     }
+
+    @Test
+    void getDistances() throws FileNotFoundException, IOException {
+        Aoc18 aoc18test = new Aoc18("#################\n" +
+                "#i.G..c...e..H.p#\n" +
+                "########.########\n" +
+                "#j.A..b...f..D.o#\n" +
+                "########@########\n" +
+                "#k.E..a...g..B.n#\n" +
+                "########.########\n" +
+                "#l.F..d...h..C.m#\n" +
+                "#################");
+        aoc18test.getDistances();
+        System.out.println(aoc18test.distances);
+
+//        Aoc18 aoc18 = new Aoc18(this.mazeString);
+//        aoc18.getDistances();
+//        System.out.println(aoc18.distances);
+    }
+
+    @Test
+    void getKeyDist() {
+        Aoc18 aoc18test = new Aoc18("#################\n" +
+                "#i.G..c...e..H.p#\n" +
+                "########.########\n" +
+                "#j.A..b...f..D.o#\n" +
+                "########@########\n" +
+                "#k.E..a...g..B.n#\n" +
+                "########.########\n" +
+                "#l.F..d...h..C.m#\n" +
+                "#################");
+        aoc18test.getDistances();
+        System.out.println(aoc18test.distances);
+        System.out.println(aoc18test.getKeyDist('@', 'a'));
+    }
+
+    @Test
+    void dijkstra() {
+        Aoc18 aoc18test = new Aoc18("#################\n" +
+                "#i.G..c...e..H.p#\n" +
+                "########.########\n" +
+                "#j.A..b...f..D.o#\n" +
+                "########@########\n" +
+                "#k.E..a...g..B.n#\n" +
+                "########.########\n" +
+                "#l.F..d...h..C.m#\n" +
+                "#################");
+        aoc18test.getDistances();
+        System.out.println(aoc18test.distances);
+        aoc18test.dijkstra();
+    }
+
 }
