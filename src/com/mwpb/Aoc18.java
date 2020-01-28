@@ -1,18 +1,21 @@
 package com.mwpb;
 
-import javax.crypto.spec.ChaCha20ParameterSpec;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.*;
 
-class State {
+class State implements Comparable<State> {
     char lastKey;
     Set<Character> keysLeft;
+    int distEstimateFromInit;
     State(char currentKey, Set<Character> keysLeft) {
         this.lastKey = currentKey;
         this.keysLeft = keysLeft;
+        this.distEstimateFromInit = Integer.MAX_VALUE - 1;
+    }
+    
+    State(char currentKey, Set<Character> keysLeft, int dist) {
+        this.lastKey = currentKey;
+        this.keysLeft = keysLeft;
+        this.distEstimateFromInit = dist;
     }
 
     @Override
@@ -31,28 +34,51 @@ class State {
 
     @Override
     public String toString() {
-        return String.format("%c: %s", this.lastKey, this.keysLeft);
+//    	return String.format("%c:", this.lastKey);
+        return String.format("%c: %d: %s", this.lastKey, this.distEstimateFromInit, this.keysLeft);
     }
+
+	@Override
+	public int compareTo(State o) {
+		int dist = this.distEstimateFromInit;
+		int oDist = o.distEstimateFromInit;
+		if (dist < oDist) {
+			return -1;
+		} else if (dist > oDist) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+    
+    
 }
 
 class Path {
     int length;
     Set<Character> doorsOnPath;
+    Set<Character> keysOnPath;
 
     Path() {
         this.length = 0;
-        this.doorsOnPath = Set.of();
+        this.doorsOnPath = new HashSet<>();;
+        this.keysOnPath = new HashSet<>();
     }
 
     @Override
     public String toString() {
-        return String.format("(%d, doors: %s)", this.length, this.doorsOnPath);
+        return String.format("(%d, doors: %s, keys: %s)", this.length, this.doorsOnPath, this.keysOnPath);
     }
 
     int getWeight(Set<Character> remainingKeys) {
         for (char door: this.doorsOnPath) {
             if (remainingKeys.contains(Character.toLowerCase(door))) {
-                return Integer.MAX_VALUE / 2;
+                return Integer.MAX_VALUE - 1;
+            }
+        }
+        for (char door: this.keysOnPath) {
+            if (remainingKeys.contains(Character.toLowerCase(door))) {
+                return Integer.MAX_VALUE - 1;
             }
         }
         return this.length;
@@ -103,47 +129,55 @@ public class Aoc18 {
     boolean isKey(Point p) {
         return Character.isLetter(this.maze[p.y][p.x]) && Character.isLowerCase(this.maze[p.y][p.x]);
     }
+    
+    boolean isDoor(Point p, Set<Character> keysLeft) {
+    	if (!keysLeft.contains(Character.toLowerCase(this.maze[p.y][p.x]))) {
+    		return false;
+    	}
+    	return Character.isLetter(this.maze[p.y][p.x]) && Character.isUpperCase(this.maze[p.y][p.x]);
+    }
 
-    List<Point> bfs(Point p1) {
+    void bfs(Point p1) {
         Deque<Point> q = new ArrayDeque<>(List.of(p1));
         Set<Point> visited = new HashSet<>(List.of(p1));
         Map<Point, List<Point>> path = new HashMap<>();
         path.put(p1, List.of());
         while (q.size() > 0) {
+//        	System.out.println(q);
             Point current = q.remove();
-            List<Point> currentPath = new LinkedList<>(path.get(current));
-            currentPath.add(current);
-//            System.out.println(String.format("%s: %s", current, currentPath));
             int x = current.x;
             int y = current.y;
             for (Point next: List.of(new Point(x - 1, y), new Point(x + 1, y), new Point(x, y - 1), new Point(x, y + 1))) {
-//                System.out.println(String.format("Next: %s: %c", next, this.maze[next.y][next.x]));
                 if (this.inBounds(next) && !visited.contains(next) && this.maze[next.y][next.x] != '#') {
+                	List<Point> currentPath = new LinkedList<>(path.get(current));
                     if (this.isKey(next)) {
-                        List<Point> newPoints = new LinkedList<>(currentPath);
-                        newPoints.add(next);
+                    	List<Point> newPoints = new LinkedList<>(currentPath);
+//                        newPoints.add(next);
                         Path newPath = this.createPath(newPoints);
-//                        System.out.println(String.format("new points: %s", newPath));
                         this.distances.put(String.format("%c%c", this.maze[p1.y][p1.x], this.maze[next.y][next.x]), newPath);
                         this.distances.put(String.format("%c%c", this.maze[next.y][next.x], this.maze[p1.y][p1.x]), newPath);
                     }
+                    currentPath.add(next);
+                    q.add(next);
                     path.put(next, currentPath);
                     visited.add(next);
-                    q.add(next);
                 }
             }
         }
-        return List.of();
     }
+    
+    
 
     Path createPath(List<Point> points) {
         Path path = new Path();
-        path.length = points.size();
+        path.length = points.size() + 1;
         path.doorsOnPath = new HashSet<>();
         for (Point p: points) {
             char c = this.maze[p.y][p.x];
             if (Character.isLetter(c) && Character.isUpperCase(c)) {
                 path.doorsOnPath.add(c);
+            } else if (Character.isLetter(c) && Character.isLowerCase(c)) {
+            	path.keysOnPath.add(c);
             }
         }
         return path;
@@ -171,9 +205,9 @@ public class Aoc18 {
                 this.maze[p1.y][p1.x], this.maze[p2.y][p2.x])).getWeight(this.keysRemaining.keySet());
     }
 
-    int getKeyDist(char key1, char key2) {
-        return this.distances.get(String.format("%c%c", key1, key2)).getWeight(this.keysRemaining.keySet());
-    }
+//    int getKeyDist(char key1, char key2) {
+//        return this.distances.get(String.format("%c%c", key1, key2)).getWeight(this.keysRemaining.keySet());
+//    }
 
     Set<Character> getCharsFromPath(String path) {
         Set<Character> chars = new HashSet<>();
@@ -182,54 +216,75 @@ public class Aoc18 {
         }
         return chars;
     }
-
-    State getClosestUnvisitedState(Map<State, Integer> distEstimates, Set<State> visited) {
-        int bestDist = Integer.MAX_VALUE / 2;
-        State bestState = new State('@', Set.of());
-        for (State state: distEstimates.keySet()) {
-            if (!visited.contains(state)) {
-                int dist = this.distances.get(String.format("%c%c", '@', state.lastKey)).getWeight(state.keysLeft);
-                if (dist < bestDist) {
-                    bestDist = dist;
-                    bestState = state;
-                }
-            }
-        }
-        return bestState;
+    
+    State getClosestToInitState(Map<State, Integer> distEstimates, Map<State, Integer> finalisedDists) {
+    	int bestDist = Integer.MAX_VALUE - 1;
+    	State bestState = new State('x', new HashSet<>());
+    	for (State state: distEstimates.keySet()) {
+    		if (!finalisedDists.containsKey(state)) {
+    			int dist = distEstimates.get(state);
+        		if (dist < bestDist) {
+        			bestDist = dist;
+        			bestState = state;
+        		}
+    		}
+    	}
+    	return bestState;
+    }
+    
+    int getDist(Character c1, State state) {
+    	Path p = this.distances.get(String.format("%c%c", c1, state.lastKey));
+    	return p.getWeight(state.keysLeft);
+    }
+    
+    Map<Character, Integer> getNextKeysWithDistances(Character lastKey, Set<Character> keysLeft) {
+//    	System.out.println(lastKey);
+//    	System.out.println(keysLeft);
+    	Map<Character, Integer> keysWithDistances = new HashMap<>();
+    	for (Character key: keysLeft) {
+    		Path p = this.distances.get(String.format("%c%c", lastKey, key));
+//    		System.out.println(key);
+//    		System.out.println(p.getWeight(keysLeft));
+    		if (p.getWeight(keysLeft) < Integer.MAX_VALUE / 2) {
+    			keysWithDistances.put(key, p.length);
+    		}
+    	}
+    	return keysWithDistances;
     }
 
-    void dijkstra() {
-//        Set<Character> keysLeft = new HashSet<>(this.keysRemaining.keySet());
-        Map<State, Integer> distEstimates = new HashMap<>();
-//        distEstimates.put(new State('@', keysLeft), 0);
-//        keysLeft.remove(new State('@', keysLeft));
-        Set<State> visited = new HashSet<>();
-        State initState = new State('@', this.keysRemaining.keySet());
-//        visited.add(initState);
-        distEstimates.put(initState, 0);
-        while (distEstimates.keySet().size() > 0) {
-            State nearestState = this.getClosestUnvisitedState(distEstimates, visited);
-            if (nearestState.equals(new State('@', Set.of()))) {
-                break;
-            }
-            visited.add(nearestState);
-            System.out.println(String.format("state: %s, distEstimates: %s", nearestState, distEstimates));
-            Set<Character> newKeysLeft = new HashSet<>(nearestState.keysLeft);
-            for (char key: newKeysLeft) {
-                Set<Character> modKeysLeft = new HashSet<>(newKeysLeft);
-                modKeysLeft.remove(key);
-                State newState = new State(key, modKeysLeft);
-                int alt = distEstimates.getOrDefault(nearestState,Integer.MAX_VALUE / 2) +
-                        this.distances.get(String.format("%c%c", key, nearestState.lastKey)).getWeight(modKeysLeft);
-                System.out.println(String.format("newState: %s, alt: %d", newState, alt));
-                if (alt < distEstimates.getOrDefault(newState, Integer.MAX_VALUE / 2)) {
-                    distEstimates.put(newState, alt);
-                }
-            }
-            System.out.println(distEstimates);
-        }
-        System.out.println(distEstimates);
-        return;
+    int dijkstra() {
+    	PriorityQueue<State> distEstimates = new PriorityQueue<>();
+//    	Map<State, Integer> distEstimates = new HashMap<>();
+    	Map<State, Integer> finalisedDists = new HashMap<>();
+    	Set<Character> keysLeft = new HashSet<>(this.keysRemaining.keySet());
+    	keysLeft.remove('@');
+    	State initState = new State('@', keysLeft);
+    	initState.distEstimateFromInit = 0;
+    	distEstimates.add(initState);
+    	while (distEstimates.size() > 0) {
+//    		System.out.println(distEstimates);
+    		State nearestToInit = distEstimates.poll();
+    		if (!finalisedDists.containsKey(nearestToInit)) {
+    			System.out.println(nearestToInit);
+        		finalisedDists.put(nearestToInit, nearestToInit.distEstimateFromInit);
+        		if (nearestToInit.keysLeft.size() == 0) {
+        			System.out.println(finalisedDists);
+        			return nearestToInit.distEstimateFromInit;
+        		}
+//        		System.out.println(distEstimates);
+//        		System.out.println(finalisedDists);
+        		Map<Character, Integer> nextChars = this.getNextKeysWithDistances(nearestToInit.lastKey, nearestToInit.keysLeft);
+//        		System.out.println(nextChars);
+        		for (Character c: nextChars.keySet()) {
+        			Set<Character> newKeysLeft = new HashSet<>(nearestToInit.keysLeft);
+        			newKeysLeft.remove(c);
+        			State state = new State(c, newKeysLeft, nextChars.get(c) + nearestToInit.distEstimateFromInit);
+    				distEstimates.add(state);
+        		}
+        		distEstimates.remove(nearestToInit);
+    		}
+    	}
+    	return -1;
     }
 
 }

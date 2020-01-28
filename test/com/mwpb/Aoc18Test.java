@@ -126,7 +126,7 @@ class Aoc18Test {
                 "########.########\n" +
                 "#l.F..d...h..C.m#\n" +
                 "#################");
-        aoc18test.getDistances();
+//        aoc18test.getDistances();
         System.out.println(aoc18test.distances);
 
 //        Aoc18 aoc18 = new Aoc18(this.mazeString);
@@ -145,25 +145,49 @@ class Aoc18Test {
                 "########.########\n" +
                 "#l.F..d...h..C.m#\n" +
                 "#################");
-        aoc18test.getDistances();
+//        aoc18test.getDistances();
         System.out.println(aoc18test.distances);
-        System.out.println(aoc18test.getKeyDist('@', 'a'));
+//        System.out.println(aoc18test.getKeyDist('@', 'a'));
     }
 
     @Test
     void dijkstra() {
-        Aoc18 aoc18test = new Aoc18("#################\n" +
-                "#i.G..c...e..H.p#\n" +
-                "########.########\n" +
-                "#j.A..b...f..D.o#\n" +
-                "########@########\n" +
-                "#k.E..a...g..B.n#\n" +
-                "########.########\n" +
-                "#l.F..d...h..C.m#\n" +
-                "#################");
-        aoc18test.getDistances();
-        System.out.println(aoc18test.distances);
-        aoc18test.dijkstra();
+//        Aoc18 aoc18test = new Aoc18("########################\n" + 
+//        		"#...............b.C.D.f#\n" + 
+//        		"#.######################\n" + 
+//        		"#.....@.a.B.c.d.A.e.F.g#\n" + 
+//        		"########################");
+//        aoc18test.getDistances();
+//        System.out.println(aoc18test.distances);
+//        System.out.println(aoc18test.dijkstra());
+////        
+//        Aoc18 aoc18test1 = new Aoc18("########################\n" + 
+//        		"#@..............ac.GI.b#\n" + 
+//        		"###d#e#f################\n" + 
+//        		"###A#B#C################\n" + 
+//        		"###g#h#i################\n" + 
+//        		"########################");
+//        aoc18test1.getDistances();
+//        System.out.println(aoc18test1.distances);
+//        System.out.println(aoc18test1.dijkstra());
+        
+//        Aoc18 aoc18test2 = new Aoc18("#################\n" + 
+//        		"#i.G..c...e..H.p#\n" + 
+//        		"########.########\n" + 
+//        		"#j.A..b...f..D.o#\n" + 
+//        		"########@########\n" + 
+//        		"#k.E..a...g..B.n#\n" + 
+//        		"########.########\n" + 
+//        		"#l.F..d...h..C.m#\n" + 
+//        		"#################");
+//        aoc18test2.getDistances();
+//        System.out.println(aoc18test2.distances);
+//        System.out.println(aoc18test2.dijkstra());
+        
+        Aoc18 aoc18 = new Aoc18(this.mazeString);
+        aoc18.getDistances();
+        System.out.println(aoc18.distances);
+        System.out.println(aoc18.dijkstra());
     }
 
 }
