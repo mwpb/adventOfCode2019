@@ -1,25 +1,29 @@
 package com.mwpb;
 
+import java.io.*;
+
 import java.util.*;
 
-class Aoc18 {
+import com.google.gson.Gson;
+
+
+class Aoc18_2 {
 	char[][] maze;
 	Map<Character, Point> keysLeft;
 	Map<Character, Point> pointsLookup;
 	Map<Character, ArrayList<Edge>> adjList;
 	
 	Map<PointState, Set<Edge>> nextKeysCache;
-	Map<StepsState, Integer> stepsCache;
+	Map<RobotsState, Integer> stepsCache;
 	
 	
-	Aoc18(String mazeString) {
+	Aoc18_2(String mazeString) {
 		String[] lines = mazeString.split("\n");
 		
         this.maze = new char[lines.length][lines[0].length()];
         this.keysLeft = new HashMap<Character, Point>();
         this.pointsLookup = new HashMap<Character, Point>();
         this.adjList = new HashMap<Character, ArrayList<Edge>>();
-        
         this.nextKeysCache = new HashMap<>();
         this.stepsCache = new HashMap<>();
         
@@ -88,7 +92,7 @@ class Aoc18 {
         	char c = ps.c;
         	Deque<Edge> q = new ArrayDeque<>();
         	Map<Character, Integer> distance = new HashMap<>();
-        	Set<Edge> reachableKeys = new HashSet<>();
+        	Set<Edge> nextKeys = new HashSet<>();
         	
         	q.addAll(this.adjList.get(c));
         	keysCollected.add(c);
@@ -101,7 +105,7 @@ class Aoc18 {
         	while (q.size() > 0) {
         		Edge edge = q.poll();
         		if (Character.isLowerCase(edge.end) && !keysCollected.contains(edge.end) && c != edge.end) {
-        			reachableKeys.add(edge);
+        			nextKeys.add(edge);
         		} else if (!keysCollected.contains(Character.toLowerCase(edge.end))) {
         		} else {
         			for (Edge e: this.adjList.get(edge.end)) {
@@ -113,35 +117,45 @@ class Aoc18 {
         			}
         		}
         	}
-        	this.nextKeysCache.put(ps, reachableKeys);
-        	return reachableKeys;
+        	this.nextKeysCache.put(ps, nextKeys);
+        	return nextKeys;
     	}
     }
     
-    int mainDistance(StepsState ss) {
-    	if (this.stepsCache.containsKey(ss)) {
-    		return this.stepsCache.get(ss);
+    int mainDistance(RobotsState rs) {
+    	if (this.stepsCache.containsKey(rs)) {
+    		return this.stepsCache.get(rs);
     	} else {
-    		PointState ps = ss.ps;
-        	int nFind = ss.numberOfKeysRemaining;
-        	char c = ps.c;
-        	Set<Character> keysCollected = new HashSet<Character>();
-        	keysCollected.addAll(ps.keysCollected);
-        	keysCollected.add(c);
-        	if (nFind == 0) {
+    		if (rs.numberOfKeysRemaining == 0) {
         		return 0;
         	}
-        	int best = Integer.MAX_VALUE / 2;
-        	for (Edge edge: this.nextKeys(ps)) {
-        		Set<Character> newKeys = new HashSet<>();
-        		newKeys.addAll(keysCollected);
-        		newKeys.add(edge.end);
-        		int dist = edge.length + this.mainDistance(new StepsState(new PointState(edge.end, newKeys), nFind - 1));
-        		if (dist < best) {
-        			best = dist;
-        		}
-        	}
-        	this.stepsCache.put(ss, best);
+    		int best = Integer.MAX_VALUE / 2;
+    		for (Character robot: rs.robots) {
+    			Set<Character> newKeysCollected = new HashSet<>();
+    			newKeysCollected.addAll(rs.keysCollected);
+    			PointState ps = new PointState(robot, newKeysCollected);
+            	int nFind = rs.numberOfKeysRemaining;
+            	char c = ps.c;
+            	Set<Character> keysCollected = new HashSet<Character>();
+            	keysCollected.addAll(ps.keysCollected);
+            	keysCollected.add(c);
+            	
+            	for (Edge edge: this.nextKeys(ps)) {
+            		Set<Character> newRobots = new HashSet<>();
+            		newRobots.addAll(rs.robots);
+            		newRobots.remove(robot);
+            		newRobots.add(edge.end);
+            		
+            		Set<Character> newKeys = new HashSet<>();
+            		newKeys.addAll(keysCollected);
+            		newKeys.add(edge.end);
+            		int dist = edge.length + this.mainDistance(new RobotsState(newRobots, newKeys, nFind - 1));
+            		if (dist < best) {
+            			best = dist;
+            		}
+            	}
+    		}
+        	this.stepsCache.put(rs, best);
         	return best;
     	}
     }

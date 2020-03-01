@@ -9,7 +9,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Aoc18Test {
+class Aoc18_3Test {
 
     String mazeString = "#################################################################################\n" +
             "#.#..a....#...#..........y..#.#.........#.I...#...#.....#.............#.......#.#\n" +
@@ -96,17 +96,22 @@ class Aoc18Test {
     @Test
     void testExamples() {
     	
-    	Aoc18 aoc18test = new Aoc18("########################\n" + 
+    	Aoc18_3 aoc18test = new Aoc18_3(
+    			"########################\n" + 
     			"#0..............ac.GI.b#\n" + 
     			"###d#e#f################\n" + 
     			"###A#B#C################\n" + 
     			"###g#h#i################\n" + 
     			"########################");
-        aoc18test.getAdjList();
-        int minSteps = aoc18test.mainDistance(new StepsState(new PointState('0', new HashSet<Character>()), aoc18test.keysLeft.size()));
-        Assertions.assertEquals(minSteps, 81);
+        int minSteps = aoc18test.mainDistance(new BFSState(
+        		new Point(1, 1),
+        		new HashSet<Character>(),
+        		aoc18test.keysLeft.size()
+        		));
+        Assertions.assertEquals(81, minSteps);
         
-        Aoc18 aoc18test3 = new Aoc18("#################\n" +
+        Aoc18_3 aoc18test3 = new Aoc18_3( // this example seems to take too long...
+        		"#################\n" +
                 "#i.G..c...e..H.p#\n" +
                 "########.########\n" +
                 "#j.A..b...f..D.o#\n" +
@@ -115,20 +120,28 @@ class Aoc18Test {
                 "########.########\n" +
                 "#l.F..d...h..C.m#\n" +
                 "#################");
-        aoc18test3.getAdjList();
-        int minSteps3 = aoc18test3.mainDistance(new StepsState(new PointState('0', new HashSet<Character>()), aoc18test3.keysLeft.size()));
-        Assertions.assertEquals(minSteps3, 136);
+        int minSteps3 = aoc18test3.mainDistance(new BFSState(
+        		new Point(8, 4),
+        		new HashSet<Character>(),
+        		aoc18test3.keysLeft.size()
+        		));
+        Assertions.assertEquals(136, minSteps3);
         
-        Aoc18 aoc18test2 = new Aoc18("########################\n" + 
-        		"#...............b.C.D.f#\n" + 
-        		"#.######################\n" + 
-        		"#.....0.a.B.c.d.A.e.F.g#\n" + 
-        		"########################");
-        aoc18test2.getAdjList();
-        aoc18test2.nextKeys(new PointState('e', new HashSet(Set.of('0', 'a', 'b', 'c', 'd', 'e'))));
         
-        int minSteps2 = aoc18test2.mainDistance(new StepsState(new PointState('0', new HashSet<Character>()), aoc18test2.keysLeft.size()));
-        Assertions.assertEquals(minSteps2, 132);
+//        aoc18test3.getAdjList();
+//        int minSteps3 = aoc18test3.mainDistance(new StepsState(new PointState('0', new HashSet<Character>()), aoc18test3.keysLeft.size()));
+//        Assertions.assertEquals(minSteps3, 136);
+//        
+//        Aoc18 aoc18test2 = new Aoc18("########################\n" + 
+//        		"#...............b.C.D.f#\n" + 
+//        		"#.######################\n" + 
+//        		"#.....0.a.B.c.d.A.e.F.g#\n" + 
+//        		"########################");
+//        aoc18test2.getAdjList();
+//        aoc18test2.nextKeys(new PointState('e', new HashSet(Set.of('0', 'a', 'b', 'c', 'd', 'e'))));
+//        
+//        int minSteps2 = aoc18test2.mainDistance(new StepsState(new PointState('0', new HashSet<Character>()), aoc18test2.keysLeft.size()));
+//        Assertions.assertEquals(minSteps2, 132);
     }
     
     @Test

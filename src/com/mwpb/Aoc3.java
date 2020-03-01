@@ -15,6 +15,11 @@ class Point {
         this.x = x;
         this.y = y;
     }
+    
+    Point(Point p) {
+    	this.x = p.x;
+    	this.y = p.y;
+    }
 
     public String toString() {
         return String.format("(%d, %d)", this.x, this.y);
