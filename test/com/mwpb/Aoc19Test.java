@@ -10,12 +10,37 @@ public class Aoc19Test {
 	@Test
 	void testPoints() {
 		Aoc19 aoc19 = new Aoc19(this.intcodeString);
-		System.out.println(aoc19.checkPoint(0, 0));
+		Assertions.assertEquals(true, aoc19.checkPoint(new Point(0, 0)));
 	}
 	
 	@Test
 	void testCount50x50() {
 		Aoc19 aoc19 = new Aoc19(this.intcodeString);
-		System.out.println(aoc19.countIn50x50());
+		Assertions.assertEquals(201, aoc19.countIn50x50());
+	}
+
+	@Test
+	void testCheckBox() {
+		Aoc19 aoc19 = new Aoc19(this.intcodeString);
+		Assertions.assertEquals(true, aoc19.checkBox(new Point (22, 33)));
+	}
+
+	@Test
+	void testCheckRow() {
+		Aoc19 aoc19 = new Aoc19(this.intcodeString);
+		System.out.println(aoc19.checkRow(33));
+	}
+
+	@Test
+	void testPrint() {
+		Aoc19 aoc19 = new Aoc19(this.intcodeString);
+		aoc19.printBox(30, 40);
+	}
+
+	@Test
+	void testFindSantaShip() {
+		Aoc19 aoc19 = new Aoc19(this.intcodeString);
+		Point p = aoc19.findSantaShip();
+		System.out.println(p.x * 10000 + p.y);
 	}
 }
