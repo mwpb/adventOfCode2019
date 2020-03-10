@@ -11,6 +11,9 @@ class WeightedEdge {
         this.length = length;
         this.end = end;
     }
+    public String toString() {
+        return String.format("%s:%d", this.end, this.length);
+    }
 }
 
 public class Aoc20 {
@@ -78,7 +81,20 @@ public class Aoc20 {
         this.nodes.put(clearedPoint, label);
     }
 
+    void addEdge(Point p1, Point p2, int length) {
+        ArrayList<WeightedEdge> tmpList = new ArrayList<WeightedEdge>();
+        tmpList.addAll(this.adjList.getOrDefault(p1, new ArrayList<>()));
+        tmpList.add(new WeightedEdge(length, p2));
+        this.adjList.put(p1, tmpList);
+
+        ArrayList<WeightedEdge> tmpList2 = new ArrayList<WeightedEdge>();
+        tmpList2.addAll(this.adjList.getOrDefault(p2, new ArrayList<>()));
+        tmpList2.add(new WeightedEdge(length, p1));
+        this.adjList.put(p2, tmpList2);
+    }
+
     void getGraph() {
+        // get nodes
         for(int i = 0; i < this.maze.size(); i++) {
             for(int j = 0; j < this.maze.get(0).size(); j++) {
                 if (Character.isLetter(this.maze.get(i).get(j))) {
@@ -86,7 +102,20 @@ public class Aoc20 {
                 }
             }
         }
+
         // add portals to adjList
+        Map<Set<Character>, Point> labelsToPoints = new HashMap<>();
+        for (Map.Entry<Point, Set<Character>> entry: this.nodes.entrySet()) {
+            Point p1 = entry.getKey();
+            Set<Character> labels = entry.getValue();
+            if (labelsToPoints.containsKey(labels)) {
+                Point p2 = labelsToPoints.get(labels);
+                this.addEdge(p1, p2, 1);
+                labelsToPoints.remove(labels);
+            } else {
+                labelsToPoints.put(labels, p1);
+            }
+        }
         // use bfs to add travel distances to adjList
     }
 }
