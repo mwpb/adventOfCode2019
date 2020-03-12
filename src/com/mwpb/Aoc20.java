@@ -14,12 +14,25 @@ class WeightedEdge {
     public String toString() {
         return String.format("%s:%d", this.end, this.length);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WeightedEdge edge = (WeightedEdge) o;
+        return this.length == edge.length && this.end.x == edge.end.x && this.end.y == edge.end.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }
 
 public class Aoc20 {
 
     ArrayList<ArrayList<Character>> maze;
-    Map<Point, ArrayList<WeightedEdge>> adjList;
+    Map<Point, Set<WeightedEdge>> adjList;
     Map<Point, Set<Character>> nodes;
 
     Aoc20(String filepath) throws FileNotFoundException {
@@ -40,6 +53,10 @@ public class Aoc20 {
 
     boolean inBounds(Point p) {
         return (p.x >= 0) && (p.y >= 0) && (p.x < this.maze.get(0).size()) && (p.y < this.maze.size());
+    }
+
+    boolean isClear(Point p) {
+        return this.maze.get(p.y).get(p.x) == '.';
     }
 
     ArrayList<Point> getNeighbours(Point p) {
@@ -82,15 +99,37 @@ public class Aoc20 {
     }
 
     void addEdge(Point p1, Point p2, int length) {
-        ArrayList<WeightedEdge> tmpList = new ArrayList<WeightedEdge>();
-        tmpList.addAll(this.adjList.getOrDefault(p1, new ArrayList<>()));
+        Set<WeightedEdge> tmpList = new HashSet<WeightedEdge>();
+        tmpList.addAll(this.adjList.getOrDefault(p1, new HashSet<>()));
         tmpList.add(new WeightedEdge(length, p2));
         this.adjList.put(p1, tmpList);
 
-        ArrayList<WeightedEdge> tmpList2 = new ArrayList<WeightedEdge>();
-        tmpList2.addAll(this.adjList.getOrDefault(p2, new ArrayList<>()));
+        Set<WeightedEdge> tmpList2 = new HashSet<WeightedEdge>();
+        tmpList2.addAll(this.adjList.getOrDefault(p2, new HashSet<>()));
         tmpList2.add(new WeightedEdge(length, p1));
         this.adjList.put(p2, tmpList2);
+    }
+
+    void bfs(Point p) {
+        Map<Point, Integer> distances = new HashMap<>();
+        Deque<Point> q = new ArrayDeque<>();
+
+        q.add(p);
+        distances.put(p, 0);
+
+        while (q.size() > 0) {
+            Point current = q.poll();
+            int distance = distances.get(current);
+            for (Point next: this.getNeighbours(current)) {
+                if (this.isClear(next) && !distances.containsKey(next)) {
+                    q.add(next);
+                    distances.put(next, distance + 1);
+                    if (this.nodes.containsKey(next)) {
+                        this.addEdge(p, next, distance);
+                    }
+                }
+            }
+        }
     }
 
     void getGraph() {
@@ -116,6 +155,10 @@ public class Aoc20 {
                 labelsToPoints.put(labels, p1);
             }
         }
+
         // use bfs to add travel distances to adjList
+        for (Point node: this.nodes.keySet()) {
+            this.bfs(node);
+        }       
     }
 }
