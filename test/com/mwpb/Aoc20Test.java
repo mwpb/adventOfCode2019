@@ -20,5 +20,7 @@ public class Aoc20Test {
         aoc20.getGraph();
         System.out.println(aoc20.nodes);
         System.out.println(aoc20.adjList);
+        System.out.println(aoc20.initPoint);
+        System.out.println(aoc20.endPoint);
     }
 }

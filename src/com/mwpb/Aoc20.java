@@ -34,6 +34,7 @@ public class Aoc20 {
     ArrayList<ArrayList<Character>> maze;
     Map<Point, Set<WeightedEdge>> adjList;
     Map<Point, Set<Character>> nodes;
+    Point initPoint, endPoint;
 
     Aoc20(String filepath) throws FileNotFoundException {
         this.adjList = new HashMap<>();
@@ -95,6 +96,12 @@ public class Aoc20 {
         Set<Character> label = new HashSet<>();
         label.add(firstChar);
         label.add(secondChar);
+
+        if (label.equals(Set.of('A'))) {
+            this.initPoint = clearedPoint;
+        } else if (label.equals(Set.of('B'))) {
+            this.endPoint = clearedPoint;
+        }
         this.nodes.put(clearedPoint, label);
     }
 
