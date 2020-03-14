@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-class WeightedEdge {
+class WeightedEdge implements Comparable<WeightedEdge> {
     int length;
     Point end;
     WeightedEdge(int length, Point end) {
@@ -27,6 +27,16 @@ class WeightedEdge {
     public int hashCode() {
         return 0;
     }
+
+    @Override
+	public int compareTo(WeightedEdge o) {
+		if (this.length < o.length) {
+			return -1;
+		} else if (this.length > o.length) {
+			return +1;
+		}
+		return 0;
+	}
 }
 
 public class Aoc20 {
@@ -99,7 +109,7 @@ public class Aoc20 {
 
         if (label.equals(Set.of('A'))) {
             this.initPoint = clearedPoint;
-        } else if (label.equals(Set.of('B'))) {
+        } else if (label.equals(Set.of('Z'))) {
             this.endPoint = clearedPoint;
         }
         this.nodes.put(clearedPoint, label);
@@ -132,7 +142,7 @@ public class Aoc20 {
                     q.add(next);
                     distances.put(next, distance + 1);
                     if (this.nodes.containsKey(next)) {
-                        this.addEdge(p, next, distance);
+                        this.addEdge(p, next, distance + 1);
                     }
                 }
             }
@@ -167,5 +177,30 @@ public class Aoc20 {
         for (Point node: this.nodes.keySet()) {
             this.bfs(node);
         }       
+    }
+
+    int dijkstra(Point start, Point end) {
+        PriorityQueue<WeightedEdge> q = new PriorityQueue<>();
+        Map<Point, Integer> distances = new HashMap<>();
+
+        q.add(new WeightedEdge(0, start));
+        distances.put(start, 0);
+        
+        while (q.size() > 0 && q.size() < 1000) {
+            System.out.println(q);
+            System.out.println(distances);
+            WeightedEdge nearest = q.poll();
+            if (nearest.end.equals(end)) {
+                return distances.get(end);
+            }
+            for (WeightedEdge next: this.adjList.get(nearest.end)) {
+                int alt = nearest.length + next.length;
+                if (alt < distances.getOrDefault(next.end, Integer.MAX_VALUE / 2)) {
+                    distances.put(next.end, alt);
+                    q.add(new WeightedEdge(alt, next.end));
+                }
+            }
+        }
+        return -1;
     }
 }
