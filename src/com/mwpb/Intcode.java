@@ -34,6 +34,12 @@ public class Intcode {
         this.input = new LinkedList<Integer>();
         this.memory = memory;
     }
+    
+    void addInput(String s) {
+    	for (char c: s.toCharArray()) {
+    		this.input.add((int) c);
+    	}
+    }
 
     int getOpcode() {
         return (int) this.memory[this.pointer] % 100;
@@ -156,6 +162,18 @@ public class Intcode {
         }
         return Optional.empty();
     }
-
+    
+    String runAll() {
+    	StringBuilder sb = new StringBuilder();
+    	Optional<Long> output = this.run();
+        while(output.isPresent()) {
+        	if (output.get() > 255) {
+        		sb.append(output);
+        	}
+        	sb.append((char) (long) output.get());
+        	output = this.run();
+        }
+        return sb.toString();
+    }
 
 }
