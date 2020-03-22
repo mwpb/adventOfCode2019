@@ -125,7 +125,7 @@ class Aoc18Test {
         		"#.....0.a.B.c.d.A.e.F.g#\n" + 
         		"########################");
         aoc18test2.getAdjList();
-        aoc18test2.nextKeys(new PointState('e', new HashSet(Set.of('0', 'a', 'b', 'c', 'd', 'e'))));
+        aoc18test2.nextKeys(new PointState('e', new HashSet<>(Set.of('0', 'a', 'b', 'c', 'd', 'e'))));
         
         int minSteps2 = aoc18test2.mainDistance(new StepsState(new PointState('0', new HashSet<Character>()), aoc18test2.keysLeft.size()));
         Assertions.assertEquals(minSteps2, 132);
