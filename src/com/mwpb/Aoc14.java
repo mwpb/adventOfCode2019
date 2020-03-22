@@ -60,6 +60,7 @@ public class Aoc14 {
             Map<String, Long> reactantsRequired = new HashMap<>();
             reactantsRequired.put("FUEL", 1L);
         }
+        scanner.close();
     }
 
     boolean isFinished(Map<String, Long> reactantsRequired) {

@@ -21,6 +21,7 @@ public class Intcode {
         this.pointer = 0;
         this.input = new LinkedList<Integer>();
         this.memory = memory;
+        scanner.close();
     }
 
     Intcode(String line) {
