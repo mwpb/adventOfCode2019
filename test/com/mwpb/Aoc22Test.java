@@ -97,18 +97,6 @@ public class Aoc22Test {
 		System.out.println(aoc22.deck);
 		Assertions.assertEquals(4485, aoc22.get2019th());
 	}
-	
-	@Test
-	void testHugeShuffle() {
-		Aoc22 aoc22 = new Aoc22(10007);
-		System.out.println(aoc22.deck);
-		for (Long i = 0L; i < 101741582076661L; i++) {
-			aoc22.carryOutInstructions();
-		}
-		System.out.println(aoc22.deck);
-		Assertions.assertEquals(4485, aoc22.get2019th());
-	}
-	
 }
 
 
