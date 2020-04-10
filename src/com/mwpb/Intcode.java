@@ -1,13 +1,17 @@
 package com.mwpb;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayDeque;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import com.google.common.collect.Sets;
 
 public class Intcode {
 
@@ -260,6 +264,45 @@ public class Intcode {
 			}
 		} while (next.isPresent());
 		return q;
+	}
+
+	String asciiOutput(Deque<Long> q) {
+		StringBuffer sb = new StringBuffer();
+		for (Long l : q) {
+			sb.append((char) (int) (long) l);
+		}
+		return sb.toString();
+	}
+
+	List<Long> asciiToInputList(String s) {
+		List<Long> input = new LinkedList<>();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			input.add((long) (int) c);
+		}
+		input.add(10L);
+		return input;
+	}
+
+	void interactive(Deque<String> preamble) throws IOException {
+
+		while (true) {
+			Deque<Long> q = this.runInputsToOutputs();
+			System.out.println(this.asciiOutput(q));
+			System.out.print(":");
+			String s = "";
+			if (preamble.size() > 0) {
+				s = preamble.remove();
+			}
+//			else {
+//				BufferedReader br = new BufferedReader(
+//						new InputStreamReader(System.in));
+//				s = br.readLine();
+//			}
+//			System.out.print(s);
+			this.input.addAll(this.asciiToInputList(s));
+//			System.out.print(this.asciiToInputList(s));
+		}
 	}
 
 	String runAll() {
