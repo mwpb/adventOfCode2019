@@ -21,7 +21,7 @@ class Aoc18_2 {
 		this.pointsLookup = new HashMap<Character, Point>();
 		this.adjList = new HashMap<Character, ArrayList<Edge>>();
 		this.nextKeysCache = new HashMap<>();
-		this.stepsCache = new HashMap<>();
+		this.stepsCache = new HashMap<>(); 
 
 		Set<Point> initRobots = new HashSet<>();
 		for (int i = 0; i < lines.length; i++) {

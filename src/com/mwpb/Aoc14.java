@@ -9,14 +9,14 @@ class Reactant {
 
     Reactant(String name, int quantity) {
         this.name = name;
-        this.quantity = quantity;
-    }
+        this.quantity =  quantity;
+    } 
 
     Reactant(String inputString) {
         inputString = inputString.trim();
         String[] inputs = inputString.split(" ");
         this.quantity = Integer.parseInt(inputs[0]);
-        this.name = inputs[1];
+        this.name = inputs[1]; 
     }
 
     @Override

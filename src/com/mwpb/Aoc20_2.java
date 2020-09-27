@@ -187,7 +187,7 @@ public class Aoc20_2 {
             for(int j = 0; j < this.maze.get(0).size(); j++) {
                 if (Character.isLetter(this.maze.get(i).get(j))) {
                     this.addNode(new Point(j, i));
-                }
+                }  
             }
         }
 

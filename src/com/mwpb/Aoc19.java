@@ -18,12 +18,12 @@ public class Aoc19 {
 	boolean checkPoint(Point p) {
 		if (this.cache.containsKey(p)) {
 			return this.cache.get(p);
-		} else {
+		} else { 
 			Intcode intcode = new Intcode(this.intcodeString);
 			intcode.input = new LinkedList<Long>(
 					List.of((long) p.x, (long) p.y));
 			Optional<Long> output = intcode.run();
-			boolean isInBeam = output.get() == 1;
+			boolean isInBeam = output.get() ==  1;
 
 			this.cache.put(p, isInBeam);
 			return isInBeam;
